@@ -351,6 +351,28 @@ Error File::Write(const std::vector<float>& data,
   return kNoError;
 }
 
+Error File::Write(const uint8_t *block, size_t block_size)
+{
+    if (!impl_->ostream.is_open()) {
+        return kNotOpen;
+    }
+
+    auto current_data_size = impl_->current_sample_index();
+    auto bits_per_sample = impl_->header.fmt.bits_per_sample;
+    auto num_channel = impl_->header.fmt.num_channel;
+
+    if(block_size % (bits_per_sample * num_channel/ 8) != 0)
+    {
+        return kInvalidFormat;
+    }
+
+    impl_->ostream.write(reinterpret_cast<const char*>(block), block_size);
+
+    // update header to show the right data size
+    impl_->WriteHeader(current_data_size + block_size / (bits_per_sample / 8));
+    return kNoError;
+}
+
 Error File::Seek(uint64_t frame_index) {
   if (!impl_->ostream.is_open() && !impl_->istream.is_open()) {
     return kNotOpen;

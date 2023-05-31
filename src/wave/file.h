@@ -66,7 +66,15 @@ class File {
    */
   Error Write(const std::vector<float>& data,
               void (*encrypt)(char* data, size_t size), bool clip = false);
-  
+
+
+  /**
+   * @brief Write the given block raw data
+   * @param block  : pointer to the data to write, only uint8_t raw byte are accepted
+   * @param block_size : size of the block to write in bytes
+   */
+  Error Write(const uint8_t *block, size_t block_size);
+
   /**
    * Move to the given frame in the file
    */
